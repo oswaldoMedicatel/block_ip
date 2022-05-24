@@ -1,0 +1,20 @@
+protected function calculateRemainingAttempts($key, $maxAttempts, $retryAfter = null)
+    {
+        if (is_null($retryAfter)) {
+            return $this->limiter->retriesLeft($key, $maxAttempts);
+        } else {
+
+            $temp = Ips::where('ip', \Request::ip())->first();
+
+            if (!$temp) {
+                $ip = new Ips();
+                $ip->ip = \Request::ip();
+                $ip->save();
+            }
+
+            $reset = new RestrictIpAddressMiddleware();
+            $reset->reset($key);
+
+            return 0;
+        }
+    }
